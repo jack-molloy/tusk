@@ -8,7 +8,7 @@ struct CLIArgs {
     #[arg(short, long)]
     store: Option<PathBuf>,
     #[command(subcommand)]
-    command: Command,
+    command: Option<Command>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -22,11 +22,11 @@ enum Command {
     },
     /// Change the status of a task
     #[clap(visible_alias("mv"))]
-    Move,
+    Move { task_id: i32, status: String },
     /// Create a new task
     Add,
     /// Update a task definition
-    Edit,
+    Edit { task_id: i32 },
     /// Create, view, or change task store
     Store(StoreArgs),
 }
@@ -58,5 +58,42 @@ enum StoreCommand {
 
 fn main() {
     let args = CLIArgs::parse();
-    dbg!(args);
+    if let Some(command) = args.command {
+        match command {
+            Command::Show { all } => {
+                if all {
+                    println!("Showing all tasks")
+                } else {
+                    println!("Showing active tasks")
+                }
+            }
+            Command::Add => {
+                println!("Creating a new task using an editor of your choice")
+            }
+            Command::Edit { task_id } => {
+                println!("Updating task {} using an editor of your choice", task_id)
+            }
+            Command::Move { task_id, status } => {
+                println!("Updating the status of task {} to {}", task_id, status)
+            }
+            Command::Store(store) => match store.command {
+                Some(store_command) => match store_command {
+                    StoreCommand::New { path } => {
+                        println!("Creating a new task store at {:?}", path)
+                    }
+                    StoreCommand::View => {
+                        println!("Showing the current active store")
+                    }
+                    StoreCommand::Switch { path } => {
+                        println!("Switching active task store to {:?}", path)
+                    }
+                },
+                None => {
+                    println!("Showing the current active store")
+                }
+            },
+        }
+    } else {
+        println!("Showing active tasks")
+    }
 }
