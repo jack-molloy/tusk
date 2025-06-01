@@ -56,6 +56,21 @@ enum StoreCommand {
     },
 }
 
+struct Task {
+    task_id: i32,
+    status: Status,
+    title: String,
+}
+
+enum Status {
+    Backlog,
+    Todo,
+    Doing,
+    Blocked,
+    Done,
+    Rejected,
+}
+
 fn main() {
     let args = CLIArgs::parse();
     if let Some(command) = args.command {
