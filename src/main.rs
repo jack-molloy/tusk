@@ -71,44 +71,80 @@ enum Status {
     Rejected,
 }
 
+fn create_task() {
+    println!("Creating a new task using an editor of your choice")
+}
+
+fn show_active_tasks() {
+    println!("Showing active tasks")
+}
+
+fn show_all_tasks() {
+    println!("Showing all tasks")
+}
+
+fn edit_task(task_id: i32) {
+    println!("Updating task {} using an editor of your choice", task_id)
+}
+
+fn update_task(task_id: i32, status: String) {
+    println!("Updating the status of task {} to {}", task_id, status)
+}
+
+fn create_store(path: PathBuf) {
+    println!("Creating a new task store at {:?}", path)
+}
+
+fn get_current_store_path() -> PathBuf {
+    return PathBuf::from("./default.tusk");
+}
+
+fn print_active_store() {
+    println!("The current active store is {:?}", get_current_store_path())
+}
+
+fn set_active_store(path: PathBuf) {
+    println!("Switching active task store to {:?}", path)
+}
+
 fn main() {
     let args = CLIArgs::parse();
     if let Some(command) = args.command {
         match command {
             Command::Show { all } => {
                 if all {
-                    println!("Showing all tasks")
+                    show_all_tasks();
                 } else {
-                    println!("Showing active tasks")
+                    show_active_tasks();
                 }
             }
             Command::Add => {
-                println!("Creating a new task using an editor of your choice")
+                create_task();
             }
             Command::Edit { task_id } => {
-                println!("Updating task {} using an editor of your choice", task_id)
+                edit_task(task_id);
             }
             Command::Move { task_id, status } => {
-                println!("Updating the status of task {} to {}", task_id, status)
+                update_task(task_id, status);
             }
             Command::Store(store) => match store.command {
                 Some(store_command) => match store_command {
                     StoreCommand::New { path } => {
-                        println!("Creating a new task store at {:?}", path)
+                        create_store(path);
                     }
                     StoreCommand::View => {
-                        println!("Showing the current active store")
+                        print_active_store();
                     }
                     StoreCommand::Switch { path } => {
-                        println!("Switching active task store to {:?}", path)
+                        set_active_store(path);
                     }
                 },
                 None => {
-                    println!("Showing the current active store")
+                    print_active_store();
                 }
             },
         }
     } else {
-        println!("Showing active tasks")
+        show_all_tasks();
     }
 }
